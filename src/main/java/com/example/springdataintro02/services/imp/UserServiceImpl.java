@@ -43,4 +43,24 @@ public class UserServiceImpl implements UserService {
        return userRepository.getUsersByEmailEndingWith(domain);
     }
 
+    @Override
+    public List<User> getUsersByLoginDate(LocalDateTime criteria) {
+        List<User> users = userRepository.getUserByLastTimeLoggedInBefore(criteria);
+        users.forEach(user -> {
+            user.setDeleted(true);
+            userRepository.save(user);
+        });
+        return users;
+    }
+
+    @Override
+    public void deleteUser(User user) {
+        userRepository.delete(user);
+    }
+
+//    @Override
+//    public void deleteUsers() {
+//        userRepository.getUserByIsDeletedEquals(true).forEach(userRepository::delete);
+//    }
+
 }

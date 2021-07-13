@@ -38,31 +38,37 @@ public class CommandLineRunnerImpl implements CommandLineRunner {
     public void run(String... args) throws Exception {
         Scanner sc = new Scanner(System.in);
         while (true) {
-            System.out.println("0. EXIT\n1. Register user\n2. Add town\n3. Login\n4. Search users by domain\n5. Delete user ");
+            System.out.println("0. EXIT\n1. Register user\n2. Add town\n3. Login\n4. Search users by domain\n5. Remove inactive user ");
             int action = Integer.parseInt(sc.nextLine());
             if (action == 0){
                 break;
             }
             switch (action) {
-                case 1:
-                    registerUser(sc);
-                    break;
-                case 2:
-                    addTown(sc);
-                    break;
-                case 3:
-                    login(sc);
-                    break;
-                case 4:
-                    searchUsersByDomain(sc);
-                    break;
-                default:
-                    System.out.println("Wrong input, please try again.") ;
-                    break;
+                case 1 -> registerUser(sc);
+                case 2 -> addTown(sc);
+                case 3 -> login(sc);
+                case 4 -> searchUsersByDomain(sc);
+                case 5 -> removeInactiveUsers(sc);
+                default -> System.out.println("Wrong input, please try again.");
             }
         }
 
     }
+
+    private void removeInactiveUsers(Scanner sc) {
+        System.out.print("Enter date criteria (dd/MM/yyyy): ");
+        try {
+            int[] dateData = Arrays.stream(sc.nextLine().split("/")).mapToInt(Integer::parseInt).toArray();
+            LocalDateTime criteria = LocalDateTime.of(dateData[2], dateData[1], dateData[0], 0, 0);
+            List<User> markedForRemoval = userService.getUsersByLoginDate(criteria);
+            markedForRemoval.forEach(userService::deleteUser);
+            System.out.printf("Number of users removed: %d\n", markedForRemoval.size());
+        }catch (Exception e){
+            System.out.println("Incorrect date value!");
+        }
+
+    }
+
 
     private void searchUsersByDomain(Scanner sc) {
         System.out.print("Please enter domain: ");
@@ -122,12 +128,12 @@ public class CommandLineRunnerImpl implements CommandLineRunner {
         String livingTownName = sc.nextLine();
         Town livingTown = getIfTownExistsElseAdd(sc, livingTownName);
         User user = new User(firstName, lastName, username
-                , password, email, LocalDateTime.now(), LocalDateTime.now()
+                , password, email, LocalDateTime.now(),LocalDateTime.of(1960,1,1,0,0)
                 , age, bornTown, livingTown,
                 new HashSet<User>(), new HashSet<PersonalAlbum>(),false);
         if(userService.addUser(user)){
             System.out.println("User added successfully");
-            login(sc);
+            userService.getLogin(user.getUsername(),user.getPassword());
         }else {
             System.out.println("Something went wrong, please try again.");
         }
