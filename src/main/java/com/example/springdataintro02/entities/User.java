@@ -5,6 +5,7 @@ import javax.validation.constraints.Email;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 import java.time.LocalDateTime;
+import java.util.HashSet;
 import java.util.Set;
 
 @Entity
@@ -26,11 +27,12 @@ public class User extends BaseEntity {
     private Town currentlyLivingTown;
     private Set<User> friends;
     private Set<PersonalAlbum> albums;
+    private Boolean isDeleted;
 
     public User() {
     }
 
-    public User(String firstName, String lastName, String username, String password, String email, LocalDateTime registeredOn, LocalDateTime lastTimeLoggedIn, Integer age, Town bornTown, Town currentlyLivingTown, Set<User> friends, Set<PersonalAlbum> albums) {
+    public User(String firstName, String lastName, String username, String password, String email, LocalDateTime registeredOn, LocalDateTime lastTimeLoggedIn, Integer age, Town bornTown, Town currentlyLivingTown, Set<User> friends, Set<PersonalAlbum> albums,Boolean isDeleted) {
         this.firstName = firstName;
         this.lastName = lastName;
         this.username = username;
@@ -43,7 +45,10 @@ public class User extends BaseEntity {
         this.currentlyLivingTown = currentlyLivingTown;
         this.friends = friends;
         this.albums = albums;
+        this.isDeleted = isDeleted;
     }
+
+
 
     public String getFullName() {
         return this.firstName+" "+this.lastName;
@@ -164,5 +169,14 @@ public class User extends BaseEntity {
 
     public void setAlbums(Set<PersonalAlbum> albums) {
         this.albums = albums;
+    }
+
+    @Column(name="is_deleted")
+    public Boolean getDeleted() {
+        return isDeleted;
+    }
+
+    public void setDeleted(Boolean deleted) {
+        isDeleted = deleted;
     }
 }

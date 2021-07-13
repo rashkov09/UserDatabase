@@ -2,6 +2,13 @@ package com.example.springdataintro02.services;
 
 import com.example.springdataintro02.entities.User;
 
+import java.util.List;
+
 public interface UserService {
-    void addUser(User user);
+    boolean addUser(User user);
+
+    boolean getLogin(String username, String password);
+
+
+    List<User> getUsersByDomainName(String domain);
 }
